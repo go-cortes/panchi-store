@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Producto - Mundo Mascota</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+            <div class="container">
+                <a class="navbar-brand fw-bold" href="../index.html">
+                    <i class="bi bi-heart-pulse-fill me-2"></i> Mundo Mascota
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="../index.html">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="productos.html">Productos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="nosotros.html">Nosotros</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="blogs.html">Blogs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="contacto.html">Contacto</a>
+                        </li>
+                    </ul>
+                    
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="login.html">
+                                <i class="bi bi-person"></i> Iniciar Sesión
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="registro.html">
+                                <i class="bi bi-person-plus"></i> Registrarse
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link position-relative" href="carrito.html">
+                                <i class="bi bi-cart3"></i> Carrito
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cart-count">
+                                    0
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-5">
+        <!-- Breadcrumb -->
+        <section class="py-3 bg-light">
+            <div class="container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="../index.html">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="productos.html">Productos</a></li>
+                        <li class="breadcrumb-item active" aria-current="page" id="breadcrumb-product">Producto</li>
+                    </ol>
+                </nav>
+            </div>
+        </section>
+
+        <!-- Product Detail -->
+        <section class="py-5">
+            <div class="container">
+                <div class="row g-5">
+                    <!-- Product Images -->
+                    <div class="col-lg-6">
+                        <div class="product-images">
+                            <!-- Main Image -->
+                            <div class="main-image mb-3">
+                                <img id="product-image" src="" alt="Producto" class="img-fluid rounded shadow" style="width: 100%; height: 400px; object-fit: cover;">
+                            </div>
+                            
+                            <!-- Thumbnail Images -->
+                            <div class="thumbnail-images d-flex gap-2">
+                                <img src="" alt="Vista 1" class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;" onclick="changeMainImage(this.src)">
+                                <img src="" alt="Vista 2" class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;" onclick="changeMainImage(this.src)">
+                                <img src="" alt="Vista 3" class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;" onclick="changeMainImage(this.src)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Info -->
+                    <div class="col-lg-6">
+                        <div class="product-info">
+                            <!-- Product Name -->
+                            <h1 id="product-name" class="display-6 fw-bold text-primary mb-3">Cargando...</h1>
+                            
+                            <!-- Category -->
+                            <div class="mb-3">
+                                <span class="badge bg-secondary fs-6" id="product-category">Categoría</span>
+                            </div>
+
+                            <!-- Price -->
+                            <div class="mb-4">
+                                <span id="product-price" class="display-5 fw-bold text-success">$0</span>
+                                <small class="text-muted ms-2">Precio final</small>
+                            </div>
+
+                            <!-- Stock Status -->
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                    <span id="product-stock" class="fw-bold">En Stock</span>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="mb-4">
+                                <h5 class="fw-bold mb-3">Descripción</h5>
+                                <p id="product-description" class="text-muted">Cargando descripción...</p>
+                            </div>
+
+                            <!-- Quantity Selector -->
+                            <div class="mb-4">
+                                <label for="quantity" class="form-label fw-bold">Cantidad</label>
+                                <div class="input-group" style="width: 150px;">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity()">-</button>
+                                    <input type="number" class="form-control text-center" id="quantity" value="1" min="1" max="10">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity()">+</button>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="d-grid gap-2 mb-4">
+                                <button id="add-to-cart-btn" class="btn btn-primary btn-lg" onclick="addToCartFromDetail()">
+                                    <i class="bi bi-cart-plus"></i> Añadir al Carrito
+                                </button>
+                                <button class="btn btn-outline-primary btn-lg">
+                                    <i class="bi bi-heart"></i> Añadir a Favoritos
+                                </button>
+                            </div>
+
+                            <!-- Product Features -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-6">
+                                    <div class="text-center p-3 border rounded">
+                                        <i class="bi bi-truck text-primary fs-4"></i>
+                                        <div class="small fw-bold">Envío Gratis</div>
+                                        <div class="small text-muted">Compras +$50.000</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center p-3 border rounded">
+                                        <i class="bi bi-shield-check text-success fs-4"></i>
+                                        <div class="small fw-bold">Garantía</div>
+                                        <div class="small text-muted">30 días</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Product Tabs -->
+        <section class="py-5 bg-light">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <ul class="nav nav-tabs" id="productTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab">
+                                    <i class="bi bi-info-circle"></i> Descripción
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="specifications-tab" data-bs-toggle="tab" data-bs-target="#specifications" type="button" role="tab">
+                                    <i class="bi bi-gear"></i> Especificaciones
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">
+                                    <i class="bi bi-star"></i> Reseñas (0)
+                                </button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content" id="productTabsContent">
+                            <!-- Description Tab -->
+                            <div class="tab-pane fade show active" id="description" role="tabpanel">
+                                <div class="p-4">
+                                    <h5 class="fw-bold mb-3">Descripción Detallada</h5>
+                                    <p id="detailed-description" class="text-muted">Cargando descripción detallada...</p>
+                                </div>
+                            </div>
+
+                            <!-- Specifications Tab -->
+                            <div class="tab-pane fade" id="specifications" role="tabpanel">
+                                <div class="p-4">
+                                    <h5 class="fw-bold mb-3">Especificaciones Técnicas</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <tbody id="specifications-table">
+                                                <tr>
+                                                    <td class="fw-bold">Categoría</td>
+                                                    <td id="spec-category">-</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fw-bold">Marca</td>
+                                                    <td id="spec-brand">-</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fw-bold">Modelo</td>
+                                                    <td id="spec-model">-</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fw-bold">Dimensiones</td>
+                                                    <td id="spec-dimensions">-</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fw-bold">Peso</td>
+                                                    <td id="spec-weight">-</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Reviews Tab -->
+                            <div class="tab-pane fade" id="reviews" role="tabpanel">
+                                <div class="p-4">
+                                    <h5 class="fw-bold mb-3">Reseñas de Clientes</h5>
+                                    <div class="text-center py-5">
+                                        <i class="bi bi-star fs-1 text-muted mb-3"></i>
+                                        <h6 class="text-muted">No hay reseñas aún</h6>
+                                        <p class="text-muted">Sé el primero en dejar una reseña de este producto</p>
+                                        <button class="btn btn-primary">Escribir Reseña</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Related Products -->
+        <section class="py-5">
+            <div class="container">
+                <h3 class="fw-bold text-primary mb-4">Productos Relacionados</h3>
+                <div class="row g-4" id="related-products">
+                    <!-- Los productos relacionados se cargarán dinámicamente -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-heart-pulse-fill me-2"></i> Mundo Mascota
+                    </h5>
+                    <p class="text-muted">Tu tienda de confianza para encontrar los mejores productos con la mejor calidad y precios competitivos.</p>
+                </div>
+                <div class="col-lg-2">
+                    <h6 class="fw-bold mb-3">Enlaces</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="../index.html" class="text-muted text-decoration-none">Inicio</a></li>
+                        <li><a href="productos.html" class="text-muted text-decoration-none">Productos</a></li>
+                        <li><a href="nosotros.html" class="text-muted text-decoration-none">Nosotros</a></li>
+                        <li><a href="blogs.html" class="text-muted text-decoration-none">Blogs</a></li>
+                        <li><a href="contacto.html" class="text-muted text-decoration-none">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h6 class="fw-bold mb-3">Categorías</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-muted text-decoration-none">🍖 Alimentos</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">🎾 Juguetes</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">🛏️ Accesorios</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">🧴 Higiene</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">👕 Ropa para Mascotas</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h6 class="fw-bold mb-3">Contacto</h6>
+                    <p class="text-muted mb-2">
+                        <i class="bi bi-geo-alt"></i> Av. Principal 123, Santiago
+                    </p>
+                    <p class="text-muted mb-2">
+                        <i class="bi bi-telephone"></i> +56 9 1234 5678
+                    </p>
+                    <p class="text-muted">
+                        <i class="bi bi-envelope"></i> contacto@tiendaonline.cl
+                    </p>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="text-muted mb-0">&copy; 2024 Mundo Mascota. Todos los derechos reservados.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="../admin/admin.html" class="text-muted text-decoration-none">Panel de Administración</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../js/script.js"></script>
+    <script src="../js/product-detail.js"></script>
+</body>
+</html>
+

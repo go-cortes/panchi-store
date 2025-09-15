@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - Panchi Store</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="../index.html">
+                <div class="logo-container me-2">
+                    <div class="logo-circle">
+                        <div class="logo-square">
+                            <div class="logo-dot"></div>
+                            <div class="logo-dot"></div>
+                        </div>
+                    </div>
+                </div>
+                Panchi Store
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="productos.html">Productos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="nosotros.html">Nosotros</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="blogs.html">Blog</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contacto.html">Contacto</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="carrito.html">
+                            <i class="bi bi-cart3 me-1"></i>
+                            Carrito
+                            <span class="badge bg-secondary" id="cart-count">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main class="py-5 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4">
+                    <!-- Tarjeta de Perfil -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" 
+                                     alt="Foto de perfil" 
+                                     class="rounded-circle" 
+                                     style="width: 120px; height: 120px; object-fit: cover;"
+                                     onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg=='">
+                            </div>
+                            <h4 id="usuario-nombre" class="card-title mb-1">Usuario Demo</h4>
+                            <p id="usuario-correo" class="text-muted mb-3">usuario@panchistore.cl</p>
+                            <span class="badge bg-success mb-3">Miembro Activo</span>
+                            
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary btn-sm" onclick="editarPerfil()">
+                                    <i class="bi bi-pencil me-1"></i>Editar Perfil
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" onclick="cerrarSesionUsuario()">
+                                    <i class="bi bi-box-arrow-right me-1"></i>Cerrar Sesión
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estadísticas Rápidas -->
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>Estadísticas</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <h5 class="text-primary mb-1" id="total-pedidos">0</h5>
+                                    <small class="text-muted">Pedidos</small>
+                                </div>
+                                <div class="col-6">
+                                    <h5 class="text-success mb-1" id="total-gastado">$0</h5>
+                                    <small class="text-muted">Gastado</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+                    <!-- Información Personal -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-person me-2"></i>Información Personal</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Nombre Completo</label>
+                                    <p id="info-nombre" class="form-control-plaintext">Usuario Demo</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Correo Electrónico</label>
+                                    <p id="info-correo" class="form-control-plaintext">usuario@panchistore.cl</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Teléfono</label>
+                                    <p id="info-telefono" class="form-control-plaintext">+569 1234 5678</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Fecha de Registro</label>
+                                    <p id="info-fecha" class="form-control-plaintext">15 de Enero, 2024</p>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label class="form-label fw-bold">Dirección</label>
+                                    <p id="info-direccion" class="form-control-plaintext">Av. Principal 123, Santiago, Chile</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Historial de Pedidos Recientes -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Pedidos Recientes</h5>
+                            <a href="#" class="btn btn-outline-primary btn-sm">Ver Todos</a>
+                        </div>
+                        <div class="card-body">
+                            <div id="pedidos-recientes">
+                                <div class="text-center py-4">
+                                    <i class="bi bi-cart-x fs-1 text-muted mb-3"></i>
+                                    <h6 class="text-muted">No tienes pedidos recientes</h6>
+                                    <p class="text-muted">¡Explora nuestros productos y haz tu primer pedido!</p>
+                                    <a href="productos.html" class="btn btn-primary">Ver Productos</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Deseos -->
+                    <div class="card shadow-sm">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="bi bi-heart me-2"></i>Lista de Deseos</h5>
+                            <span class="badge bg-secondary" id="wishlist-count">0</span>
+                        </div>
+                        <div class="card-body">
+                            <div id="lista-deseos">
+                                <div class="text-center py-4">
+                                    <i class="bi bi-heart fs-1 text-muted mb-3"></i>
+                                    <h6 class="text-muted">Tu lista de deseos está vacía</h6>
+                                    <p class="text-muted">¡Agrega productos que te gusten a tu lista de deseos!</p>
+                                    <a href="productos.html" class="btn btn-outline-primary">Explorar Productos</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5 class="fw-bold mb-3">
+                        <div class="logo-container me-2">
+                            <div class="logo-circle">
+                                <div class="logo-square">
+                                    <div class="logo-dot"></div>
+                                    <div class="logo-dot"></div>
+                                </div>
+                            </div>
+                        </div>
+                        Panchi Store
+                    </h5>
+                    <p class="text-muted">Tu tienda de confianza para el cuidado de tus mascotas. Productos de calidad y atención personalizada.</p>
+                </div>
+                <div class="col-lg-2">
+                    <h6>Enlaces</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="../index.html" class="text-muted text-decoration-none">Inicio</a></li>
+                        <li><a href="productos.html" class="text-muted text-decoration-none">Productos</a></li>
+                        <li><a href="nosotros.html" class="text-muted text-decoration-none">Nosotros</a></li>
+                        <li><a href="blogs.html" class="text-muted text-decoration-none">Blog</a></li>
+                        <li><a href="contacto.html" class="text-muted text-decoration-none">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h6>Contacto</h6>
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-geo-alt me-2"></i>Av. Principal 123, Santiago</li>
+                        <li><i class="bi bi-telephone me-2"></i>+569 1234 5678</li>
+                        <li><i class="bi bi-envelope me-2"></i>info@panchistore.cl</li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h6>Redes Sociales</h6>
+                    <div class="d-flex gap-3">
+                        <a href="https://facebook.com/panchistore" target="_blank" class="text-muted" title="Síguenos en Facebook" onmouseover="this.style.color='#1877F2'" onmouseout="this.style.color='#6c757d'"><i class="bi bi-facebook fs-4"></i></a>
+                        <a href="https://instagram.com/panchistore" target="_blank" class="text-muted" title="Síguenos en Instagram" onmouseover="this.style.color='#E4405F'" onmouseout="this.style.color='#6c757d'"><i class="bi bi-instagram fs-4"></i></a>
+                        <a href="https://twitter.com/panchistore" target="_blank" class="text-muted" title="Síguenos en Twitter" onmouseover="this.style.color='#1DA1F2'" onmouseout="this.style.color='#6c757d'"><i class="bi bi-twitter fs-4"></i></a>
+                        <a href="https://youtube.com/@panchistore" target="_blank" class="text-muted" title="Suscríbete a nuestro canal" onmouseover="this.style.color='#FF0000'" onmouseout="this.style.color='#6c757d'"><i class="bi bi-youtube fs-4"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="text-muted mb-0">&copy; 2024 Panchi Store. Todos los derechos reservados.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="login.html" class="text-muted text-decoration-none me-3">Admin Login</a>
+                    <a href="login-usuario.html" class="text-muted text-decoration-none">Usuario Login</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../js/auth.js"></script>
+    <script src="../js/perfil.js"></script>
+    <script src="../js/footer.js"></script>
+</body>
+</html>

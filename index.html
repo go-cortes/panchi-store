@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Configuración básica del documento -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panchi Store - Tienda Online de Artículos para Mascotas</title>
+    
+    <!-- Enlaces a hojas de estilo -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Barra de navegación principal -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <!-- Logo y nombre de la tienda -->
+            <a class="navbar-brand" href="index.html">
+                <div class="logo-container me-2">
+                    <div class="logo-circle">
+                        <div class="logo-square">
+                            <div class="logo-dot"></div>
+                            <div class="logo-dot"></div>
+                        </div>
+                    </div>
+                </div>
+                Panchi Store
+            </a>
+            
+            <!-- Botón hamburguesa para móviles -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- Menú de navegación colapsable -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Enlaces principales -->
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pages/productos.html">Productos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pages/nosotros.html">Nosotros</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pages/blogs.html">Blog</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pages/contacto.html">Contacto</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="pages/registro.html">Registrarse</a>
+                    </li>
+                </ul>
+                <!-- Enlaces del lado derecho -->
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="pages/carrito.html">
+                            <i class="bi bi-cart-fill me-1"></i>
+                            Carrito
+                            <span class="badge bg-secondary">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sección hero (banner principal) -->
+    <section class="hero-section py-5 mt-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <!-- Columna izquierda (texto) -->
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4" style="color: #8B4513;">
+                        Todo lo que tu mascota necesita
+                    </h1>
+                    <p class="lead mb-4">
+                        En Panchi Store encontrarás los mejores productos para el cuidado y bienestar de tu compañero peludo. 
+                        Desde alimentos premium hasta juguetes y accesorios de calidad, todo en un solo lugar.
+                    </p>
+                    <a href="pages/productos.html" class="btn btn-primary btn-lg">
+                        Ver Productos
+                    </a>
+                </div>
+                <!-- Columna derecha (imagen) -->
+                <div class="col-lg-6">
+                    <div class="hero-image">
+                        <img src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600&h=400&fit=crop&crop=center" 
+                             alt="Mascotas felices" 
+                             class="img-fluid rounded shadow"
+                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbiBubyBkaXNwb25pYmxlPC90ZXh0Pjwvc3ZnPg=='">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de productos destacados -->
+    <section class="py-5" style="background: linear-gradient(135deg, #F5F5DC 0%, #F0E68C 100%);">
+        <div class="container">
+            <!-- Encabezado de la sección -->
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold mb-3" style="color: #8B4513;">
+                    <i class="bi bi-star-fill me-2" style="color: #CD853F;"></i>
+                    Productos Destacados
+                </h2>
+                <p class="lead text-muted">Los favoritos de nuestros clientes peludos</p>
+            </div>
+            <!-- Contenedor de productos (se cargan dinámicamente) -->
+            <div id="lista-productos" class="row g-4">
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de características y ventajas -->
+    <section class="py-5" style="background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);">
+        <div class="container">
+            <!-- Encabezado de ventajas -->
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold mb-3" style="color: #8B4513;">
+                    <i class="bi bi-heart-pulse-fill me-2" style="color: #CD853F;"></i>
+                    ¿Por qué elegirnos?
+                </h2>
+                <p class="lead text-muted">Cuidamos a tu mascota como si fuera nuestra</p>
+            </div>
+            <!-- Grid de características -->
+            <div class="row g-4">
+                <!-- Envío gratis -->
+                <div class="col-md-4 text-center">
+                    <div class="feature-card p-4">
+                        <i class="bi bi-truck display-4 mb-3"></i>
+                        <h4>Envío Gratis</h4>
+                        <p class="text-muted">Envío gratuito en compras superiores a $50.000 para que tu mascota no espere</p>
+                    </div>
+                </div>
+                <!-- Garantía -->
+                <div class="col-md-4 text-center">
+                    <div class="feature-card p-4">
+                        <i class="bi bi-shield-check display-4 mb-3"></i>
+                        <h4>Garantía 30 Días</h4>
+                        <p class="text-muted">Garantía de satisfacción por 30 días en todos nuestros productos</p>
+                    </div>
+                </div>
+                <!-- Soporte -->
+                <div class="col-md-4 text-center">
+                    <div class="feature-card p-4">
+                        <i class="bi bi-headset display-4 mb-3"></i>
+                        <h4>Soporte 24/7</h4>
+                        <p class="text-muted">Atención al cliente disponible las 24 horas del día para cualquier emergencia</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pie de página -->
+    <footer class="bg-dark text-light py-5">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Información de la empresa -->
+                <div class="col-lg-3">
+                    <h5>
+                        <div class="logo-container me-2">
+                            <div class="logo-circle">
+                                <div class="logo-square">
+                                    <div class="logo-dot"></div>
+                                    <div class="logo-dot"></div>
+                                </div>
+                            </div>
+                        </div>
+                        Panchi Store
+                    </h5>
+                    <p class="text-muted">
+                        Tu tienda de confianza para el cuidado y bienestar de tus mascotas.
+                    </p>
+                </div>
+                <!-- Enlaces a categorías -->
+                <div class="col-lg-3">
+                    <h6>Categorías</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="pages/productos.html?categoria=alimento" class="text-muted text-decoration-none" onmouseover="this.style.color='#8B4513'" onmouseout="this.style.color='#6c757d'">🍖 Alimentos</a></li>
+                        <li><a href="pages/productos.html?categoria=juguete" class="text-muted text-decoration-none" onmouseover="this.style.color='#8B4513'" onmouseout="this.style.color='#6c757d'">🎾 Juguetes</a></li>
+                        <li><a href="pages/productos.html?categoria=accesorio" class="text-muted text-decoration-none" onmouseover="this.style.color='#8B4513'" onmouseout="this.style.color='#6c757d'">🛏️ Accesorios</a></li>
+                        <li><a href="pages/productos.html?categoria=higiene" class="text-muted text-decoration-none" onmouseover="this.style.color='#8B4513'" onmouseout="this.style.color='#6c757d'">🧴 Higiene</a></li>
+                    </ul>
+                </div>
+                <!-- Información de contacto -->
+                <div class="col-lg-3">
+                    <h6>Contacto</h6>
+                    <ul class="list-unstyled contact-info">
+                        <li><i class="bi bi-geo-alt me-2"></i><a href="https://maps.google.com/?q=Av+Principal+123+Santiago" target="_blank" class="text-muted text-decoration-none" onmouseover="this.style.color='#8B4513'" onmouseout="this.style.color='#6c757d'">Av. Principal 123, Santiago</a></li>
+                        <li><i class="bi bi-telephone me-2"></i><a href="tel:+56912345678" class="text-muted text-decoration-none" onmouseover="this.style.color='#8B4513'" onmouseout="this.style.color='#6c757d'">+56 9 1234 5678</a></li>
+                        <li><i class="bi bi-envelope me-2"></i><a href="mailto:contacto@panchistore.cl" class="text-muted text-decoration-none" onmouseover="this.style.color='#8B4513'" onmouseout="this.style.color='#6c757d'">contacto@panchistore.cl</a></li>
+                    </ul>
+                </div>
+                <!-- Redes sociales -->
+                <div class="col-lg-3">
+                    <h6>Redes Sociales</h6>
+                    <div class="d-flex gap-3">
+                        <a href="https://facebook.com/panchistore" target="_blank" class="text-muted" title="Síguenos en Facebook" onmouseover="this.style.color='#1877F2'" onmouseout="this.style.color='#6c757d'"><i class="bi bi-facebook fs-4"></i></a>
+                        <a href="https://instagram.com/panchistore" target="_blank" class="text-muted" title="Síguenos en Instagram" onmouseover="this.style.color='#E4405F'" onmouseout="this.style.color='#6c757d'"><i class="bi bi-instagram fs-4"></i></a>
+                        <a href="https://twitter.com/panchistore" target="_blank" class="text-muted" title="Síguenos en Twitter" onmouseover="this.style.color='#1DA1F2'" onmouseout="this.style.color='#6c757d'"><i class="bi bi-twitter fs-4"></i></a>
+                        <a href="https://youtube.com/@panchistore" target="_blank" class="text-muted" title="Suscríbete a nuestro canal" onmouseover="this.style.color='#FF0000'" onmouseout="this.style.color='#6c757d'"><i class="bi bi-youtube fs-4"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="text-muted mb-0">&copy; 2024 Panchi Store. Todos los derechos reservados.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="pages/login.html" class="text-muted text-decoration-none me-3">Admin Login</a>
+                    <a href="pages/login-usuario.html" class="text-muted text-decoration-none">Usuario Login</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts de JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/footer.js"></script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .error {
+            color: red;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .success {
+            color: green;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .info {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        /* Logo CSS */
+        .logo-container {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            position: relative;
+        }
+        
+        .logo-circle {
+            width: 50px;
+            height: 50px;
+            background: #8B4513;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .logo-square {
+            width: 28px;
+            height: 28px;
+            background: #CD853F;
+            border-radius: 4px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+        }
+        
+        .logo-dot {
+            width: 5px;
+            height: 5px;
+            background: #2F1B14;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <div class="text-center mb-4">
+            <div class="logo-container d-inline-block mb-3">
+                <div class="logo-circle">
+                    <div class="logo-square">
+                        <div class="logo-dot"></div>
+                        <div class="logo-dot"></div>
+                    </div>
+                </div>
+            </div>
+            <h2 style="color: #8B4513; margin-bottom: 0;">Panchi Store</h2>
+            <p style="color: #A0522D; margin-bottom: 0;">🔐 Login Admin</p>
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Correo:</label>
+                <input type="email" id="email" placeholder="admin@duoc.cl" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" placeholder="admin123" required>
+            </div>
+            
+            <button type="button" id="loginBtn">Iniciar Sesión</button>
+        </form>
+        
+        <div id="message"></div>
+        
+        <div class="info">
+            Credenciales: admin@duoc.cl / admin123<br>
+            <a href="../index.html" style="color: #007bff; text-decoration: none;">🏠 Volver al Inicio</a>
+        </div>
+    </div>
+
+    <script>
+        // Verificar si ya está logueado
+        if (localStorage.getItem('adminLogueado') === 'true') {
+            window.location.href = 'admin.html';
+        }
+
+        // Función de login
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const message = document.getElementById('message');
+            
+            if (email === 'admin@duoc.cl' && password === 'admin123') {
+                message.innerHTML = '<div class="success">¡Login exitoso! Redirigiendo...</div>';
+                localStorage.setItem('adminLogueado', 'true');
+                setTimeout(() => {
+                    window.location.href = 'admin.html';
+                }, 1000);
+            } else {
+                message.innerHTML = '<div class="error">Credenciales incorrectas</div>';
+            }
+        }
+
+        // Configurar eventos
+        document.getElementById('loginBtn').addEventListener('click', login);
+        
+        document.getElementById('email').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') login();
+        });
+        
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') login();
+        });
+    </script>
+</body>
+</html>
