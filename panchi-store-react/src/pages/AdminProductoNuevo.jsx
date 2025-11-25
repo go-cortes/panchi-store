@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { uploadImages as xUploadImages, createProduct } from '../api/products'
+import { createProduct } from '../api/product'
 
 const schema = z.object({
   name: z.string().min(2, 'Nombre requerido'),
@@ -40,19 +40,10 @@ function AdminProductoNuevo() {
     setFiles(list)
   }
 
-  async function uploadImages(list, base) {
-    // Usa el helper centralizado que habla con Xano
-    try {
-      return await xUploadImages(list)
-    } catch (e) {
-      console.error('Upload falló', e)
-      return []
-    }
-  }
 
   async function onSubmit() {
     setError(null)
-    // const base = import.meta.env.VITE_PRODUCTS_API_URL || import.meta.env.VITE_API_URL || 'https://x8ki-letl-twmt.n7.xano.io/api:tP1BBSGu'
+    // const base = import.meta.env.VITE_PRODUCTS_API_URL || import.meta.env.VITE_API_URL || 'https://x8ki-letl-twmt.n7.xano.io/api:UJ0_Qj9c'
     try {
       setSaving(true)
       const values = getValues()
@@ -70,58 +61,16 @@ function AdminProductoNuevo() {
         return
       }
 
-      const uploadedImages = await uploadImages(files)
-      
-      // Validar que al menos una imagen se haya subido correctamente
-      if (!uploadedImages || uploadedImages.length === 0) {
-        setError('No se pudieron subir las imágenes. Por favor, intenta de nuevo.')
+      // Verificar que todos los archivos sean instancias de File
+      const validFiles = files.filter(file => file instanceof File)
+      if (validFiles.length === 0) {
+        setError('Los archivos seleccionados no son válidos')
         setSaving(false)
         return
       }
 
-      // Validar que tengamos los objetos XanoImage completos
-      if (uploadedImages.length === 0) {
-        setError('No se pudieron obtener las imágenes subidas.')
-        setSaving(false)
-        return
-      }
-
-      // Xano espera recibir los objetos completos de imagen, no solo los paths
-      // Cada objeto debe tener: access, path, name, type, size, mime, meta
-      const imagesForXano = uploadedImages.map(img => {
-        // Si ya es un objeto completo, usarlo tal cual
-        if (img && typeof img === 'object' && img.path) {
-          return {
-            access: img.access || 'public',
-            path: img.path,
-            name: img.name || img.path.split('/').pop() || 'image.jpg',
-            type: img.type || 'image',
-            size: img.size || 0,
-            mime: img.mime || 'image/jpeg',
-            meta: img.meta || {}
-          }
-        }
-        // Si es solo un path, construir el objeto mínimo
-        if (typeof img === 'string' && img) {
-          return {
-            access: 'public',
-            path: img,
-            name: img.split('/').pop() || 'image.jpg',
-            type: 'image',
-            size: 0,
-            mime: 'image/jpeg',
-            meta: {}
-          }
-        }
-        return null
-      }).filter(Boolean)
-
-      if (imagesForXano.length === 0) {
-        setError('No se pudieron procesar las imágenes subidas.')
-        setSaving(false)
-        return
-      }
-
+      // Crear el payload con los archivos File[] directamente
+      // createProduct ahora manejará el FormData internamente
       const xanoPayload = {
         name: parsed.data.name,
         description: parsed.data.description || '',
@@ -129,7 +78,7 @@ function AdminProductoNuevo() {
         stock: Number(parsed.data.stock),
         brand: parsed.data.brand,
         category: parsed.data.category,
-        images: imagesForXano, // Array de objetos XanoImage completos
+        images: validFiles, // Array de archivos File[] para enviar en FormData
       }
 
       let created = null
@@ -147,7 +96,28 @@ function AdminProductoNuevo() {
       const url = e?.config?.url
       const payload = e?.data || e?.response?.data
       console.error('Error creando producto', { status, url, payload, error: e })
-      const msg = payload?.message || e?.message || 'No se pudo crear el producto'
+      
+      // Mostrar el mensaje de error completo del servidor
+      let msg = 'No se pudo crear el producto'
+      if (payload) {
+        // Intentar extraer el mensaje de error de diferentes formatos posibles
+        if (typeof payload === 'string') {
+          msg = payload
+        } else if (payload.message) {
+          msg = payload.message
+        } else if (payload.error) {
+          msg = typeof payload.error === 'string' ? payload.error : JSON.stringify(payload.error)
+        } else if (payload.msg) {
+          msg = payload.msg
+        } else {
+          // Mostrar el objeto completo como string para debug
+          msg = `Error: ${JSON.stringify(payload, null, 2)}`
+        }
+      } else if (e?.message) {
+        msg = e.message
+      }
+      
+      console.error('[AdminProductoNuevo] Error completo:', { status, url, payload, error: e })
       setError(msg)
     } finally {
       setSaving(false)

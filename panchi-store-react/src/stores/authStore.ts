@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import api, { apiUpload } from '../api/api'
+import api, { apiUpload, apiAuth } from '../api/api'
 import type { User } from '../types/contracts'
 
 interface AuthState {
@@ -22,7 +22,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     if (envEndpoint) endpointCandidates.push(envEndpoint)
     endpointCandidates.push('/auth/login', '/authorization/login')
 
-    const clients = [api, apiUpload]
+    // Usar apiAuth que apunta a UJ0_Qj9c para autenticación
+    const clients = [apiAuth, apiUpload]
     if (import.meta.env.DEV) {
       console.info('[auth.login] bases:', clients.map(c => c.defaults.baseURL))
       console.info('[auth.login] endpoints:', endpointCandidates)
@@ -60,10 +61,15 @@ export const useAuthStore = create<AuthState>((set) => ({
       throw lastErr || new Error('LOGIN_FAILED')
     }
 
-    const raw = res.data
-    const data = raw?.data ?? raw
+    // Programación defensiva: manejar respuestas null/undefined
+    const raw = res?.data ?? null
+    const data = raw?.data ?? raw ?? null
 
-    const token = data?.token ?? data?.authToken ?? data?.access_token ?? data?.jwt
+    if (!data) {
+      throw new Error('LOGIN_RESPONSE_INVALID')
+    }
+
+    const token = data?.token ?? data?.authToken ?? data?.access_token ?? data?.jwt ?? null
 
     let user: User | null = null
     if (data?.user) {
@@ -85,7 +91,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       }
       user = {
         id: data.id ?? 0,
-        email: data.email,
+        email: data.email ?? '',
         name: data.name ?? data.nombre ?? data.username ?? '',
         role: (data.role ?? 'cliente') as 'cliente' | 'admin',
       }
@@ -102,8 +108,13 @@ export const useAuthStore = create<AuthState>((set) => ({
         for (const client of clients) {
           try {
             const meRes = await client.get(meEndpoint, token ? { headers: { Authorization: `Bearer ${token}` } } : undefined)
-            const meRaw = meRes.data
-            const meData = meRaw?.data ?? meRaw
+            // Programación defensiva: manejar respuestas null/undefined
+            const meRaw = meRes?.data ?? null
+            const meData = meRaw?.data ?? meRaw ?? null
+            
+            if (!meData) {
+              continue
+            }
             const adminAllowList = (import.meta.env.VITE_ADMIN_EMAILS || '')
               .split(',')
               .map((s) => s.trim().toLowerCase())
@@ -159,7 +170,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ token, user, role: user.role })
   },
   async register(email, password, name) {
-    await api.post('/auth/register', { email, password, name })
+    await apiAuth.post('/auth/signup', { email, password, name })
   },
   logout() {
     try {

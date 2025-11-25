@@ -50,10 +50,9 @@ function normalizeProduct(x: any): Product {
 
 async function fetchProductAny(productId: number): Promise<Product | null> {
   const id = Number(productId)
+  // Endpoint singular (API UJ0_Qj9c): GET /product/{product_id}
   const tries: Array<() => Promise<any>> = [
-    () => api.get(`/products/${id}`),
-    () => api.get(`/product/${id}`),
-    () => apiUpload.get(`/product/${id}`),
+    () => api.get(`/product/${id}`), // API UJ0_Qj9c usa endpoints singulares
   ]
   let lastErr: any = null
   for (const t of tries) {
@@ -65,23 +64,6 @@ async function fetchProductAny(productId: number): Promise<Product | null> {
       lastErr = err
     }
   }
-  // Intento con base absoluta si está configurada
-  try {
-    const base = import.meta.env.VITE_PRODUCTS_API_URL || import.meta.env.VITE_API_URL
-    if (base) {
-      const res = await api.get(`${base}/products/${id}`)
-      const raw = res.data?.data ?? res.data
-      return normalizeProduct(raw)
-    }
-  } catch {}
-  try {
-    const base = import.meta.env.VITE_PRODUCTS_API_URL || import.meta.env.VITE_API_URL
-    if (base) {
-      const res = await api.get(`${base}/product/${id}`)
-      const raw = res.data?.data ?? res.data
-      return normalizeProduct(raw)
-    }
-  } catch {}
   if (import.meta.env.DEV && lastErr) {
     const status = lastErr?.response?.status
     console.warn('[favoritesStore] No se pudo obtener producto', id, 'status:', status)
@@ -99,8 +81,25 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
   list: [],
   async fetch() {
     try {
-      const res = await api.get<unknown, { data: ApiResponse<Product[]> }>('/me/favorites')
-      set({ list: res.data.data })
+      const res = await api.get<unknown, { data: ApiResponse<any[]> }>('/favorite')
+      // El endpoint ahora devuelve una lista donde cada objeto tiene _product anidado
+      const favorites = res.data?.data ?? null
+      if (Array.isArray(favorites)) {
+        // Mapear directamente la respuesta, extrayendo _product de cada favorito
+        const products = favorites
+          .map((favorite) => {
+            // Extraer los datos del producto de la propiedad anidada _product
+            const productData = favorite._product ?? favorite.product ?? favorite
+            // Normalizar el producto usando la función helper
+            return normalizeProduct(productData)
+          })
+          .filter((p) => p.id > 0) // Filtrar productos inválidos
+        set({ list: products })
+        saveLocal(products) // Guardar en localStorage como respaldo
+      } else {
+        // Si la respuesta está vacía o no es un array, usar array vacío
+        set({ list: [] })
+      }
     } catch (e) {
       // Fallback: cargar desde localStorage
       const list = loadLocal()
@@ -109,7 +108,7 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
   },
   async add(productId) {
     try {
-      await api.post('/me/favorites', { productId })
+      await api.post('/favorite', { productId })
       const prod = await fetchProductAny(productId)
       const { list } = get()
       if (!list.find(p => p.id === productId)) {
@@ -155,7 +154,7 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
   },
   async remove(productId) {
     try {
-      await api.delete(`/me/favorites/${productId}`)
+      await api.delete(`/favorite/${productId}`)
     } catch (e) {
       if (!shouldFallback(e)) throw e
       // continuar al fallback local

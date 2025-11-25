@@ -41,7 +41,7 @@ function AdminOrdenes() {
       
       // Intentar diferentes endpoints comunes para obtener órdenes
       let res = null
-      const endpoints = ['/orders', '/order', '/me/orders']
+      const endpoints = ['/order']
       
       for (const endpoint of endpoints) {
         try {
@@ -109,7 +109,7 @@ function AdminOrdenes() {
     
     try {
       // Intentar diferentes endpoints para actualizar orden
-      const endpoints = [`/orders/${orden.id}`, `/order/${orden.id}`, `/me/orders/${orden.id}`]
+        const endpoints = [`/order/${orden.id}`]
       
       let actualizado = false
       for (const endpoint of endpoints) {

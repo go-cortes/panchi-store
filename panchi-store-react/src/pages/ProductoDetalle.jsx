@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import api, { apiUpload } from '../api/api'
+import api from '../api/api'
 import { useCartStore } from '../stores/cartStore'
 import { useFavoritesStore } from '../stores/favoritesStore'
-import { buildImageUrl } from '../utils/imageUtils'
 
 function formatearPrecio(valor) {
   return new Intl.NumberFormat('es-CL', {
@@ -25,32 +24,19 @@ function ProductoDetalle() {
     async function load() {
       try {
         if (import.meta.env.DEV) {
-          console.info('[ProductoDetalle] base:', api.defaults.baseURL, 'uploadBase:', apiUpload.defaults.baseURL, 'trying GET /products/:id')
+          console.info('[ProductoDetalle] base:', api.defaults.baseURL, 'trying GET /product/:id')
         }
-        const res = await api.get(`/products/${id}`)
+            const res = await api.get(`/product/${id}`) // Endpoint singular (API UJ0_Qj9c)
         const p = res.data?.data ?? res.data
         if (mounted) setProducto(p)
       } catch (e) {
-        try {
-          if (import.meta.env.DEV) {
-            const status = e?.response?.status
-            console.warn('[ProductoDetalle] GET /products/:id failed, status:', status, 'trying GET /product/:id')
-          }
-          const res = await api.get(`/product/${id}`)
-          const p = res.data?.data ?? res.data
-          if (mounted) setProducto(p)
-        } catch (e2) {
-          try {
-            if (import.meta.env.DEV) {
-              const status = e2?.response?.status
-              console.warn('[ProductoDetalle] GET /product/:id failed on base, status:', status, 'trying uploadBase GET /product/:id')
-            }
-            const res = await apiUpload.get(`/product/${id}`)
-            const p = res.data?.data ?? res.data
-            if (mounted) setProducto(p)
-          } catch (e3) {
-            console.error(e3)
-          }
+        if (import.meta.env.DEV) {
+          const status = e?.response?.status
+          console.error('[ProductoDetalle] Error al cargar producto:', { status, error: e })
+        }
+        // No hay más fallbacks, solo mostrar error
+        if (mounted) {
+          setProducto(null)
         }
       } finally {
         if (mounted) setLoading(false)
@@ -78,20 +64,156 @@ function ProductoDetalle() {
     )
   }
 
+  // Función auxiliar para obtener la URL de la imagen del producto
+  function getProductImage(product) {
+    // Debug: ver qué estructura tiene el producto
+    console.log('Debug Producto:', product)
+    
+    if (!product) {
+      return 'https://via.placeholder.com/500x500/F5F5DC/8B4513?text=Sin+imagen'
+    }
+    
+    // Lista de posibles nombres de campos de imagen (en orden de prioridad)
+    const imageFieldNames = ['images', 'image', 'imagen', 'photos', 'photo', 'imagenes']
+    
+    // Buscar el campo de imagen en el producto
+    let imageData = null
+    let fieldName = null
+    
+    for (const field of imageFieldNames) {
+      if (product[field] !== undefined && product[field] !== null) {
+        imageData = product[field]
+        fieldName = field
+        console.log(`Campo de imagen encontrado: "${field}"`, imageData)
+        break
+      }
+    }
+    
+    if (!imageData) {
+      console.log('No se encontró campo de imagen en el producto')
+      return 'https://via.placeholder.com/500x500/F5F5DC/8B4513?text=Sin+imagen'
+    }
+    
+    // Si es un Array: devolver la propiedad .url o .path del primer elemento
+    if (Array.isArray(imageData)) {
+      if (imageData.length === 0) {
+        console.log('Array de imágenes vacío')
+        return 'https://via.placeholder.com/500x500/F5F5DC/8B4513?text=Sin+imagen'
+      }
+      
+      const firstItem = imageData[0]
+      console.log('Primer elemento del array:', firstItem)
+      
+      // Verificar si tiene .url o .path
+      if (firstItem && typeof firstItem === 'object') {
+        const url = firstItem.url || firstItem.path || ''
+        console.log('URL extraída del array:', url)
+        return url || 'https://via.placeholder.com/500x500/F5F5DC/8B4513?text=Sin+imagen'
+      }
+      
+      // Si el primer elemento es un string, usarlo directamente
+      if (typeof firstItem === 'string') {
+        console.log('Primer elemento es string:', firstItem)
+        return firstItem
+      }
+      
+      return 'https://via.placeholder.com/500x500/F5F5DC/8B4513?text=Sin+imagen'
+    }
+    
+    // Si es un Objeto: devolver la propiedad .url o .path directamente
+    if (typeof imageData === 'object') {
+      const url = imageData.url || imageData.path || ''
+      console.log('URL extraída del objeto:', url)
+      return url || 'https://via.placeholder.com/500x500/F5F5DC/8B4513?text=Sin+imagen'
+    }
+    
+    // Si es un string, usarlo directamente
+    if (typeof imageData === 'string') {
+      console.log('Imagen es string:', imageData)
+      return imageData
+    }
+    
+    // Si no coincide con ningún caso, retornar placeholder
+    console.log('Tipo de dato no reconocido:', typeof imageData)
+    return 'https://via.placeholder.com/500x500/F5F5DC/8B4513?text=Sin+imagen'
+  }
+
+  // Función auxiliar para obtener todas las URLs de imágenes (para el carousel)
+  function getProductImages(product) {
+    // Debug: ver qué estructura tiene el producto
+    console.log('Debug Producto (todas las imágenes):', product)
+    
+    if (!product) {
+      return []
+    }
+    
+    // Lista de posibles nombres de campos de imagen (en orden de prioridad)
+    const imageFieldNames = ['images', 'image', 'imagen', 'photos', 'photo', 'imagenes']
+    
+    // Buscar el campo de imagen en el producto
+    let imageData = null
+    let fieldName = null
+    
+    for (const field of imageFieldNames) {
+      if (product[field] !== undefined && product[field] !== null) {
+        imageData = product[field]
+        fieldName = field
+        console.log(`Campo de imagen encontrado: "${field}"`, imageData)
+        break
+      }
+    }
+    
+    if (!imageData) {
+      console.log('No se encontró campo de imagen en el producto')
+      return []
+    }
+    
+    // Si es un Array: mapear todos los elementos y extraer .url o .path
+    if (Array.isArray(imageData)) {
+      const urls = imageData
+        .map((item, index) => {
+          if (item && typeof item === 'object') {
+            const url = item.url || item.path || ''
+            console.log(`URL ${index} extraída del array:`, url)
+            return url
+          }
+          if (typeof item === 'string') {
+            console.log(`URL ${index} es string:`, item)
+            return item
+          }
+          return ''
+        })
+        .filter(Boolean)
+      
+      console.log('Todas las URLs extraídas:', urls)
+      return urls
+    }
+    
+    // Si es un Objeto único: retornar un array con una sola URL
+    if (typeof imageData === 'object') {
+      const url = imageData.url || imageData.path || ''
+      console.log('URL extraída del objeto único:', url)
+      return url ? [url] : []
+    }
+    
+    // Si es un string, retornar un array con ese string
+    if (typeof imageData === 'string') {
+      console.log('Imagen es string:', imageData)
+      return [imageData]
+    }
+    
+    // Si no coincide con ningún caso, retornar array vacío
+    console.log('Tipo de dato no reconocido:', typeof imageData)
+    return []
+  }
+
   const nombre = producto?.nombre ?? producto?.name
   const descripcion = producto?.descripcion ?? producto?.description
   const precio = producto?.precio ?? producto?.price
-  // Normalizar imágenes: puede venir como array de objetos XanoImage, array de strings, o string simple
-  const imagesRaw = producto?.images ?? producto?.image ?? producto?.imagen ?? []
-  const images = Array.isArray(imagesRaw)
-    ? imagesRaw.map(img => {
-        const path = typeof img === 'string' ? img : (img?.url || img?.path || '')
-        return buildImageUrl(path)
-      })
-    : (imagesRaw ? [buildImageUrl(imagesRaw)] : [])
-  const validImages = images.filter(Boolean)
-  const hasMultipleImages = validImages.length > 1
-  const imagen = validImages[0] || ''
+  // Obtener todas las imágenes usando la función auxiliar
+  const images = getProductImages(producto)
+  const hasMultipleImages = images.length > 1
+  const imagen = images[0] || ''
   const categoria = producto?.categoria ?? producto?.category
   const brand = producto?.brand ?? ''
   const stock = producto?.stock ?? 0
@@ -111,7 +233,7 @@ function ProductoDetalle() {
     <div className="container py-5 mt-5">
       <div className="row g-4">
         <div className="col-md-6">
-          {hasMultipleImages && validImages.length > 1 ? (
+          {hasMultipleImages && images.length > 1 ? (
             <div 
               id={carouselId} 
               className="carousel slide rounded-4 overflow-hidden shadow-lg" 
@@ -119,7 +241,7 @@ function ProductoDetalle() {
               style={{ position: 'relative' }}
             >
               <div className="carousel-inner">
-                {validImages.map((img, idx) => (
+                {images.map((img, idx) => (
                   <div key={idx} className={`carousel-item ${idx === 0 ? 'active' : ''}`}>
                     <img
                       src={img || placeholderImage}
@@ -236,7 +358,7 @@ function ProductoDetalle() {
                   borderRadius: '20px'
                 }}
               >
-                {validImages.map((_, idx) => (
+                {images.map((_, idx) => (
                   <button
                     key={idx}
                     type="button"

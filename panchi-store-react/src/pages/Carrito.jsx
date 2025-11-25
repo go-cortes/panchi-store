@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCartStore } from '../stores/cartStore'
-import { buildImageUrl } from '../utils/imageUtils'
 
 function formatearPrecio(valor) {
   return new Intl.NumberFormat('es-CL', {
@@ -28,19 +27,94 @@ function Carrito() {
   async function handleRemove(productId) {
     await remove(productId)
   }
+  // Función auxiliar para obtener la URL de la imagen del producto
+  function getProductImage(product) {
+    // Debug: ver qué estructura tiene el producto
+    console.log('Debug Producto (Carrito):', product)
+    
+    if (!product) {
+      return ''
+    }
+    
+    // Lista de posibles nombres de campos de imagen (en orden de prioridad)
+    const imageFieldNames = ['images', 'image', 'imagen', 'photos', 'photo', 'imagenes']
+    
+    // Buscar el campo de imagen en el producto
+    let imageData = null
+    let fieldName = null
+    
+    for (const field of imageFieldNames) {
+      if (product[field] !== undefined && product[field] !== null) {
+        imageData = product[field]
+        fieldName = field
+        console.log(`Campo de imagen encontrado: "${field}"`, imageData)
+        break
+      }
+    }
+    
+    if (!imageData) {
+      console.log('No se encontró campo de imagen en el producto')
+      return ''
+    }
+    
+    // Si es un Array: devolver la propiedad .url o .path del primer elemento
+    if (Array.isArray(imageData)) {
+      if (imageData.length === 0) {
+        console.log('Array de imágenes vacío')
+        return ''
+      }
+      
+      const firstItem = imageData[0]
+      console.log('Primer elemento del array:', firstItem)
+      
+      // Verificar si tiene .url o .path
+      if (firstItem && typeof firstItem === 'object') {
+        const url = firstItem.url || firstItem.path || ''
+        console.log('URL extraída del array:', url)
+        return url
+      }
+      
+      // Si el primer elemento es un string, usarlo directamente
+      if (typeof firstItem === 'string') {
+        console.log('Primer elemento es string:', firstItem)
+        return firstItem
+      }
+      
+      return ''
+    }
+    
+    // Si es un Objeto: devolver la propiedad .url o .path directamente
+    if (typeof imageData === 'object') {
+      const url = imageData.url || imageData.path || ''
+      console.log('URL extraída del objeto:', url)
+      return url
+    }
+    
+    // Si es un string, usarlo directamente
+    if (typeof imageData === 'string') {
+      console.log('Imagen es string:', imageData)
+      return imageData
+    }
+    
+    // Si no coincide con ningún caso, retornar string vacío
+    console.log('Tipo de dato no reconocido:', typeof imageData)
+    return ''
+  }
+
   async function handleCheckout() {
     try {
       setProcessing(true)
       setMsg('')
       const { orderId, total } = await checkout()
-      setMsg(`¡Orden #${orderId} creada con éxito! Total: ${formatearPrecio(total)}`)
+      setMsg(`¡Pedido simulado #${orderId} creado con éxito! Total: ${formatearPrecio(total)}. El administrador gestionará tu pedido.`)
       
-      // Redirigir a mis pedidos después de 2 segundos
+      // Redirigir a mis pedidos después de 3 segundos
       setTimeout(() => {
         navigate('/mis-pedidos')
-      }, 2000)
+      }, 3000)
     } catch (e) {
-      setMsg('Error al procesar la orden. Por favor, intenta de nuevo.')
+      setMsg('Error al procesar el pedido. Por favor, intenta de nuevo.')
+      console.error('Error en checkout:', e)
     } finally {
       setProcessing(false)
     }
@@ -77,7 +151,7 @@ function Carrito() {
                       <td>
                         <div className="d-flex align-items-center gap-3">
                           <img
-                            src={buildImageUrl(i.product.images?.[0] || '')}
+                            src={getProductImage(i.product) || ''}
                             alt={i.product.name}
                             className="rounded"
                             style={{ width: 64, height: 64, objectFit: 'cover' }}

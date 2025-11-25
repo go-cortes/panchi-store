@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api, { apiUpload } from '../api/api'
 import { useAuthStore } from '../stores/authStore'
+import { useCartStore } from '../stores/cartStore'
 
 function formatearPrecio(valor) {
   return new Intl.NumberFormat('es-CL', {
@@ -28,6 +29,7 @@ function formatearFecha(fecha) {
 
 function MisPedidos() {
   const { user } = useAuthStore()
+  const { items: cartItems, subtotal: cartSubtotal } = useCartStore()
   const [ordenes, setOrdenes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -48,7 +50,7 @@ function MisPedidos() {
       
       // Intentar diferentes endpoints para obtener órdenes del usuario actual
       let res = null
-      const endpoints = ['/me/orders', '/orders', '/order']
+      const endpoints = ['/order']
       
       for (const endpoint of endpoints) {
         try {
@@ -77,16 +79,27 @@ function MisPedidos() {
         }
       }
 
-      if (!res) {
-        throw new Error('No se pudo conectar al endpoint de órdenes')
-      }
-
-      const raw = res.data?.data ?? res.data
-      let list = Array.isArray(raw) ? raw : []
+      let list = []
       
-      // Si el endpoint devuelve todas las órdenes, filtrar por usuario actual
-      if (user?.id) {
-        list = list.filter(o => o.user_id === user.id || o.user?.id === user.id)
+      if (res) {
+        const raw = res.data?.data ?? res.data
+        list = Array.isArray(raw) ? raw : []
+        
+        // Si el endpoint devuelve todas las órdenes, filtrar por usuario actual
+        if (user?.id) {
+          list = list.filter(o => o.user_id === user.id || o.user?.id === user.id)
+        }
+      }
+      
+      // También cargar pedidos locales (simulados) si existen
+      try {
+        const localOrders = JSON.parse(localStorage.getItem('local_orders') || '[]')
+        if (Array.isArray(localOrders) && localOrders.length > 0) {
+          // Agregar pedidos locales a la lista
+          list = [...list, ...localOrders]
+        }
+      } catch (e) {
+        console.warn('[MisPedidos] Error cargando pedidos locales:', e)
       }
       
       const formatted = list.map((o) => ({
@@ -98,12 +111,40 @@ function MisPedidos() {
         updated_at: o.updated_at,
       }))
       
-      // Ordenar por fecha más reciente primero
+      // Si hay items en el carrito, agregar el carrito actual como pedido "En Carrito"
+      if (cartItems && cartItems.length > 0 && cartSubtotal > 0) {
+        const cartOrder = {
+          id: 'CARRITO-ACTUAL',
+          status: 'En Carrito',
+          total: cartSubtotal,
+          items: cartItems.map(item => ({
+            product_id: item.product.id,
+            product_name: item.product.name || `Producto #${item.product.id}`,
+            quantity: item.qty,
+            price: item.price_snapshot,
+            subtotal: item.qty * item.price_snapshot,
+          })),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }
+        // Agregar el carrito al inicio de la lista
+        formatted.unshift(cartOrder)
+      }
+      
+      // Ordenar por fecha más reciente primero (excepto el carrito actual que siempre va primero)
+      const cartOrderIndex = formatted.findIndex(o => o.id === 'CARRITO-ACTUAL')
+      const cartOrder = cartOrderIndex >= 0 ? formatted.splice(cartOrderIndex, 1)[0] : null
+      
       formatted.sort((a, b) => {
         const dateA = new Date(a.created_at || 0).getTime()
         const dateB = new Date(b.created_at || 0).getTime()
         return dateB - dateA
       })
+      
+      // Si hay carrito actual, ponerlo primero
+      if (cartOrder) {
+        formatted.unshift(cartOrder)
+      }
       
       setOrdenes(formatted)
     } catch (e) {
@@ -116,13 +157,14 @@ function MisPedidos() {
 
   useEffect(() => {
     cargarMisPedidos()
-  }, [user])
+  }, [user, cartItems])
 
   function getStatusBadgeClass(status) {
     const statusLower = String(status || '').toLowerCase()
     if (statusLower === 'enviado') return 'bg-success'
     if (statusLower === 'rechazado') return 'bg-danger'
     if (statusLower === 'pendiente') return 'bg-warning'
+    if (statusLower === 'en carrito') return 'bg-info'
     return 'bg-secondary'
   }
 
@@ -132,6 +174,7 @@ function MisPedidos() {
       'pendiente': 'Pendiente',
       'enviado': 'Enviado',
       'rechazado': 'Rechazado',
+      'en carrito': 'En Carrito',
     }
     return labels[statusLower] || status
   }
@@ -205,9 +248,9 @@ function MisPedidos() {
                   <div className="card">
                     <div className="card-header d-flex justify-content-between align-items-center" style={{ background: 'linear-gradient(135deg, #8B4513 0%, #A0522D 100%)', color: '#fff' }}>
                       <div>
-                        <strong>Orden #{orden.id}</strong>
+                        <strong>{orden.id === 'CARRITO-ACTUAL' ? 'Carrito Actual' : `Orden #${orden.id}`}</strong>
                         <small className="d-block mt-1" style={{ opacity: 0.9 }}>
-                          {formatearFecha(orden.created_at)}
+                          {orden.id === 'CARRITO-ACTUAL' ? 'Productos en tu carrito' : formatearFecha(orden.created_at)}
                         </small>
                       </div>
                       <span className={`badge ${getStatusBadgeClass(orden.status)}`}>
@@ -239,6 +282,14 @@ function MisPedidos() {
                           {formatearPrecio(orden.total)}
                         </strong>
                       </div>
+                      {orden.id === 'CARRITO-ACTUAL' && (
+                        <div className="mt-3">
+                          <Link to="/carrito" className="btn btn-primary w-100">
+                            <i className="bi bi-cart-fill me-2"></i>
+                            Ir al Carrito para Finalizar Compra
+                          </Link>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -42,9 +42,9 @@ function AdminProductoEditar() {
     setError(null)
     try {
       if (import.meta.env.DEV) {
-        console.info('[AdminProductoEditar] base:', api.defaults.baseURL, 'uploadBase:', apiUpload.defaults.baseURL, 'trying GET /products/:id')
+        console.info('[AdminProductoEditar] base:', api.defaults.baseURL, 'trying GET /product/:id')
       }
-      const res = await api.get(`/products/${id}`)
+      const res = await api.get(`/product/${id}`) // Endpoint singular (API UJ0_Qj9c)
       const p = res.data?.data ?? res.data
       const name = p?.name ?? p?.nombre ?? ''
       const description = p?.description ?? p?.descripcion ?? ''
@@ -67,54 +67,11 @@ function AdminProductoEditar() {
       reset({ name, description, price, stock, brand, category })
       setImageUrls(validImages.length > 0 ? validImages : ['']) // Inicializar con imágenes existentes o un campo vacío
     } catch (e) {
-      // Fallback a /product/:id (Xano)
-      try {
-        if (import.meta.env.DEV) {
-          const status = e?.response?.status
-          console.warn('[AdminProductoEditar] GET /products/:id failed, status:', status, 'trying GET /product/:id')
-        }
-        const res = await api.get(`/product/${id}`)
-        const p = res.data?.data ?? res.data
-        const name = p?.name ?? p?.nombre ?? ''
-        const description = p?.description ?? p?.descripcion ?? ''
-        const price = Number(p?.price ?? 0)
-        const stock = Number(p?.stock ?? 0)
-        const brand = p?.brand ?? p?.marca ?? ''
-        const category = p?.category ?? p?.categoria ?? ''
-        const imagesArr = Array.isArray(p?.image)
-          ? p.image.map((img) => (typeof img === 'string' ? img : (img?.url || img?.path || '')))
-          : (Array.isArray(p?.images) 
-              ? p.images.map((img) => (typeof img === 'string' ? img : (img?.url || img?.path || '')))
-              : (p?.imagen ? [p.imagen] : []))
-        const validImages = imagesArr.filter(Boolean)
-        reset({ name, description, price, stock, brand, category })
-        setImageUrls(validImages.length > 0 ? validImages : [''])
-      } catch (e2) {
-        try {
-          if (import.meta.env.DEV) {
-            const status = e2?.response?.status
-            console.warn('[AdminProductoEditar] GET /product/:id failed on base, status:', status, 'trying uploadBase GET /product/:id')
-          }
-          const res = await apiUpload.get(`/product/${id}`)
-          const p = res.data?.data ?? res.data
-          const name = p?.name ?? p?.nombre ?? ''
-          const description = p?.description ?? p?.descripcion ?? ''
-          const price = Number(p?.price ?? 0)
-          const stock = Number(p?.stock ?? 0)
-          const brand = p?.brand ?? p?.marca ?? ''
-          const category = p?.category ?? p?.categoria ?? ''
-          const imagesArr = Array.isArray(p?.image)
-            ? p.image.map((img) => (typeof img === 'string' ? img : (img?.url || img?.path || '')))
-            : (Array.isArray(p?.images) 
-                ? p.images.map((img) => (typeof img === 'string' ? img : (img?.url || img?.path || '')))
-                : (p?.imagen ? [p.imagen] : []))
-          const validImages = imagesArr.filter(Boolean)
-          reset({ name, description, price, stock, brand, category })
-          setImageUrls(validImages.length > 0 ? validImages : [''])
-        } catch (e3) {
-          setError('No se pudo cargar el producto')
-        }
+      if (import.meta.env.DEV) {
+        const status = e?.response?.status
+        console.error('[AdminProductoEditar] Error al cargar producto:', { status, error: e })
       }
+      setError('No se pudo cargar el producto')
     } finally {
       setLoading(false)
     }
@@ -173,31 +130,11 @@ function AdminProductoEditar() {
         category: parsed.data.category,
         images: validImages, // Enviar array de URLs válidas
       }
-      try {
-        if (import.meta.env.DEV) {
-          console.info('[AdminProductoEditar] PATCH /products/:id on base:', api.defaults.baseURL)
-        }
-        await api.patch(`/products/${id}`, payload)
-      } catch (e) {
-        // Fallback a /product/:id (Xano)
-        try {
-          if (import.meta.env.DEV) {
-            const status = e?.response?.status
-            console.warn('[AdminProductoEditar] PATCH /products/:id failed, status:', status, 'trying PATCH /product/:id')
-          }
-          await api.patch(`/product/${id}`, payload)
-        } catch (e2) {
-          try {
-            if (import.meta.env.DEV) {
-              const status = e2?.response?.status
-              console.warn('[AdminProductoEditar] PATCH /product/:id failed on base, status:', status, 'trying uploadBase PATCH /product/:id')
-            }
-            await apiUpload.patch(`/product/${id}`, payload)
-          } catch (e3) {
-            throw e3
-          }
-        }
+      // Endpoint singular (API UJ0_Qj9c): PATCH /product/{product_id}
+      if (import.meta.env.DEV) {
+        console.info('[AdminProductoEditar] PATCH /product/:id on base:', api.defaults.baseURL)
       }
+      await api.patch(`/product/${id}`, payload) // Endpoint singular (API UJ0_Qj9c)
       navigate('/admin/productos', { replace: true })
     } catch (e) {
       setError('No se pudo guardar los cambios')

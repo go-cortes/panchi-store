@@ -2,8 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import ProductCard from '../components/ProductCard'
 import { useCartStore } from '../stores/cartStore'
 import { useFavoritesStore } from '../stores/favoritesStore'
-import api, { apiUpload } from '../api/api'
-import { buildImageUrl } from '../utils/imageUtils'
+import { getProducts } from '../api/product'
 
 function Productos() {
   const [categoria, setCategoria] = useState('todas')
@@ -21,8 +20,14 @@ function Productos() {
   const [all, setAll] = useState([])
 
   useEffect(() => {
-    // Cargar favoritos al iniciar
-    favorites.fetch().catch(() => {})
+    // Cargar favoritos al iniciar con un pequeño delay para evitar rate limiting
+    // Solo cargar si el usuario está autenticado
+    const token = localStorage.getItem('auth_token')
+    if (token) {
+      setTimeout(() => {
+        favorites.fetch().catch(() => {})
+      }, 500) // Delay de 500ms para evitar rate limiting
+    }
   }, [])
 
   useEffect(() => {
@@ -50,39 +55,19 @@ function Productos() {
       setError('')
       try {
         if (import.meta.env.DEV) {
-          console.info('[Productos] base:', api.defaults.baseURL, 'uploadBase:', apiUpload.defaults.baseURL, 'trying GET /products')
+          console.info('[Productos] Solicitando productos...')
         }
-        const res = await api.get('/products')
-        const raw = res.data?.data ?? res.data
+        const raw = await getProducts() // Usar función centralizada de products.ts
+        if (import.meta.env.DEV) {
+          console.log('[Productos] Datos raw:', raw)
+          console.log('[Productos] Es array?', Array.isArray(raw))
+        }
         const list = Array.isArray(raw)
-          ? raw.map((x) => ({
-              id: x.id,
-              name: x.name ?? x.nombre ?? '',
-              description: x.description ?? x.descripcion ?? '',
-              price: Number(x.price ?? 0),
-              stock: Number(x.stock ?? 0),
-              brand: x.brand ?? x.marca ?? '',
-              category: x.category ?? x.categoria ?? '',
-              images: Array.isArray(x.image)
-                ? x.image.map((img) => buildImageUrl(typeof img === 'string' ? img : (img?.url || img?.path || '')))
-                : Array.isArray(x.images)
-                ? x.images.map((img) => buildImageUrl(typeof img === 'string' ? img : (img?.url || img?.path || '')))
-                : x.imagen
-                ? [buildImageUrl(x.imagen)]
-                : [],
-            }))
-          : []
-        if (mounted) setAll(list)
-      } catch (e) {
-        try {
-          if (import.meta.env.DEV) {
-            const status = e?.response?.status
-            console.warn('[Productos] GET /products failed, status:', status, 'trying GET /product')
-          }
-          const res = await api.get('/product')
-          const raw = res.data?.data ?? res.data
-          const list = Array.isArray(raw)
-            ? raw.map((x) => ({
+          ? raw.map((x) => {
+              if (import.meta.env.DEV) {
+                console.log('[Productos] Procesando producto:', x)
+              }
+              return {
                 id: x.id,
                 name: x.name ?? x.nombre ?? '',
                 description: x.description ?? x.descripcion ?? '',
@@ -90,48 +75,39 @@ function Productos() {
                 stock: Number(x.stock ?? 0),
                 brand: x.brand ?? x.marca ?? '',
                 category: x.category ?? x.categoria ?? '',
-                images: Array.isArray(x.image)
-                  ? x.image.map((img) => img?.url || img?.path || img)
-                  : Array.isArray(x.images)
-                  ? x.images
-                  : x.imagen
-                  ? [x.imagen]
-                  : [],
-              }))
-            : []
-          if (mounted) setAll(list)
-        } catch (e2) {
-          try {
-            if (import.meta.env.DEV) {
-              const status = e2?.response?.status
-              console.warn('[Productos] GET /product failed on base, status:', status, 'trying uploadBase GET /product')
-            }
-            const res = await apiUpload.get('/product')
-            const raw = res.data?.data ?? res.data
-            const list = Array.isArray(raw)
-              ? raw.map((x) => ({
-                  id: x.id,
-                  name: x.name ?? x.nombre ?? '',
-                  description: x.description ?? x.descripcion ?? '',
-                  price: Number(x.price ?? 0),
-                  stock: Number(x.stock ?? 0),
-                  brand: x.brand ?? x.marca ?? '',
-                  category: x.category ?? x.categoria ?? '',
-                  images: Array.isArray(x.image)
-                    ? x.image.map((img) => img?.url || img?.path || img)
-                    : Array.isArray(x.images)
-                    ? x.images
-                    : x.imagen
-                    ? [x.imagen]
-                    : [],
-                }))
-              : []
-            if (mounted) setAll(list)
-          } catch (e3) {
-            console.error(e3)
-            setError('No se pudieron cargar los productos')
+                // Pasar las imágenes tal como vienen del backend
+                // El backend usa 'image' (singular) como array de objetos con .url
+                // Mantener el campo original 'image' para que ProductCard lo procese correctamente
+                image: x.image ?? x.images ?? x.imagen ?? [],
+              }
+            })
+          : []
+        if (mounted) {
+          setAll(list)
+          if (import.meta.env.DEV) {
+            console.info('[Productos] Productos cargados:', list.length, 'productos')
+            console.log('[Productos] Lista final:', list)
           }
         }
+      } catch (e) {
+        const status = e?.response?.status
+        let errorMessage = e?.response?.data?.message ?? e?.message ?? 'Error desconocido'
+        
+        // Manejo especial para rate limiting (429)
+        if (status === 429 || e?.isRateLimit) {
+          errorMessage = 'Demasiadas solicitudes a la API. Por favor, espera unos segundos y recarga la página. Tu plan de Xano permite 10 solicitudes cada 20 segundos.'
+        }
+        
+        if (import.meta.env.DEV) {
+          console.error('[Productos] Error al cargar productos:', {
+            status,
+            message: errorMessage,
+            error: e,
+            response: e?.response,
+            data: e?.response?.data
+          })
+        }
+        setError(`No se pudieron cargar los productos: ${errorMessage}`)
       } finally {
         if (mounted) setLoading(false)
       }
@@ -198,7 +174,8 @@ function Productos() {
 
   function isProductFavorite(producto) {
     const id = producto?.id || producto?.productoId || producto?.productId
-    return favorites.list.some(fav => fav.id === Number(id))
+    // Usar optional chaining y valor por defecto para evitar errores si favorites.list es undefined
+    return (favorites.list || []).some(fav => fav.id === Number(id))
   }
 
   function limpiarFiltros() {
@@ -256,36 +233,49 @@ function Productos() {
       </div>
 
       {/* Listado */}
-      <div className="row g-4">
-        {productos.map(p => (
-          <ProductCard 
-            key={p.id} 
-            producto={p} 
-            onAdd={addToCart}
-            onAddToFavorites={addToFavorites}
-            onRemoveFromFavorites={removeFromFavorites}
-            isFavorite={isProductFavorite(p)}
-          />
-        ))}
-      </div>
-
-      {/* Cargar más */}
-      {productos.length < total && (
-        <div className="text-center mt-4">
-          <button
-            className="btn btn-outline-secondary"
-            disabled={loading}
-            onClick={() => setPage(p => p + 1)}
-          >
-            Cargar más
-          </button>
+      {loading && (
+        <div className="text-center mt-3 text-muted">
+          <div className="spinner-border spinner-border-sm me-2" role="status"></div>
+          Cargando productos...
         </div>
       )}
-      {loading && (
-        <div className="text-center mt-3 text-muted">Cargando...</div>
-      )}
       {error && (
-        <div className="alert alert-danger mt-3" role="alert">{error}</div>
+        <div className="alert alert-danger mt-3" role="alert">
+          <strong>Error:</strong> {error}
+        </div>
+      )}
+      {!loading && !error && productos.length === 0 && (
+        <div className="alert alert-info mt-3" role="alert">
+          No se encontraron productos. {all.length === 0 ? 'La base de datos está vacía o no se pudo conectar con la API.' : 'Intenta ajustar los filtros de búsqueda.'}
+        </div>
+      )}
+      {!loading && !error && productos.length > 0 && (
+        <>
+          <div className="row g-4">
+            {productos.map(p => (
+              <ProductCard 
+                key={p.id} 
+                producto={p} 
+                onAdd={addToCart}
+                onAddToFavorites={addToFavorites}
+                onRemoveFromFavorites={removeFromFavorites}
+                isFavorite={isProductFavorite(p)}
+              />
+            ))}
+          </div>
+          {/* Cargar más */}
+          {productos.length < total && (
+            <div className="text-center mt-4">
+              <button
+                className="btn btn-outline-secondary"
+                disabled={loading}
+                onClick={() => setPage(p => p + 1)}
+              >
+                Cargar más ({productos.length} de {total})
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   )

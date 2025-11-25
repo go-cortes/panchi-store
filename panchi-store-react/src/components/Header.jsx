@@ -19,17 +19,40 @@ function Header() {
 
   useEffect(() => {
     // Si hay sesión, sincroniza con servidor
+    // IMPORTANTE: Limpiar carrito local cuando cambia el token/usuario
+    // para asegurar que cada usuario vea solo su carrito
     if (token) {
+      // Limpiar carrito local antes de cargar el del servidor
+      // Esto asegura que no se mezclen carritos de diferentes usuarios
+      const currentUser = user?.id
+      const lastUserId = localStorage.getItem('last_cart_user_id')
+      
+      if (lastUserId && lastUserId !== String(currentUser)) {
+        // El usuario cambió, limpiar carrito local
+        console.log('[Header] Usuario cambió, limpiando carrito local')
+        localStorage.removeItem('local_cart')
+        useCartStore.setState({ items: [], subtotal: 0 })
+      }
+      
+      // Guardar el ID del usuario actual
+      if (currentUser) {
+        localStorage.setItem('last_cart_user_id', String(currentUser))
+      }
+      
       fetch().catch(() => {})
       fetchFavorites().catch(() => {})
+    } else {
+      // Si no hay token, limpiar también
+      localStorage.removeItem('last_cart_user_id')
     }
-  }, [token])
+  }, [token, user?.id])
 
   function handleLogout() {
     // Limpiar todo el estado antes de hacer logout
     try {
       // Limpiar carrito local
       localStorage.removeItem('local_cart')
+      localStorage.removeItem('last_cart_user_id')
       
       // Limpiar favoritos local
       localStorage.removeItem('local_favorites')
@@ -37,6 +60,8 @@ function Header() {
       // Limpiar estado de stores (resetear a valores iniciales)
       useCartStore.setState({ items: [], subtotal: 0 })
       useFavoritesStore.setState({ list: [] })
+      
+      console.log('[Header] Estado limpiado en logout')
     } catch (e) {
       console.error('Error limpiando estado en logout:', e)
     }
@@ -173,7 +198,9 @@ function Header() {
               <NavLink className="nav-link" to="/carrito">
                 <i className="bi bi-cart-fill me-1"></i>
                 Carrito
-                <span className="badge bg-secondary ms-1">{items?.length || 0}</span>
+                <span className="badge bg-secondary ms-1">
+                  {items?.reduce((sum, item) => sum + item.qty, 0) || 0}
+                </span>
               </NavLink>
             </li>
             <li className="nav-item">
