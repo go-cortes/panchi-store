@@ -1,0 +1,671 @@
+/* Copiado desde sitio original */
+/* Estilos personalizados para la tienda de mascotas */
+
+/* Variables CSS - Paleta de colores Panchi Store */
+
+:root {
+    --primary-pet: #8B4513;
+    --secondary-pet: #A0522D;
+    --accent-pet: #CD853F;
+    --warm-pet: #D2691E;
+    --soft-pet: #F5F5DC;
+    --dark-pet: #2F1B14;
+    --success-color: #228B22;
+    --warning-color: #FF8C00;
+    --danger-color: #DC143C;
+    --info-color: #4682B4;
+    --logo-brown: #8B4513;
+    --logo-light-brown: #CD853F;
+}
+
+/* Estilos generales del cuerpo */
+body {
+    padding-top: 76px;
+    background: linear-gradient(135deg, #F5F5DC 0%, #F0E68C 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #2F1B14;
+}
+
+/* Tipografía mejorada */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    color: var(--primary-pet);
+    margin-bottom: 1rem;
+}
+
+h1 {
+    font-size: 2.5rem;
+    line-height: 1.2;
+}
+
+h2 {
+    font-size: 2rem;
+    line-height: 1.3;
+}
+
+h3 {
+    font-size: 1.5rem;
+    line-height: 1.4;
+}
+
+p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #2F1B14;
+}
+
+.text-primary {
+    color: var(--primary-pet) !important;
+}
+
+.text-secondary {
+    color: var(--secondary-pet) !important;
+}
+
+/* Tarjetas de producto */
+.card {
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(139, 69, 19, 0.1);
+    border: none;
+    height: 100%;
+    border-radius: 15px;
+    overflow: hidden;
+    background: linear-gradient(145deg, #ffffff 0%, #F5F5DC 100%);
+}
+
+/* Efecto hover en tarjetas */
+.card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 30px rgba(139, 69, 19, 0.2);
+    border: 2px solid var(--primary-pet);
+}
+
+/* Imágenes de producto */
+.card-img-top {
+    height: 220px;
+    object-fit: cover;
+    border-radius: 0;
+    transition: transform 0.3s ease;
+}
+
+/* Efecto zoom en imagen al hacer hover */
+.card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+/* Sección hero */
+.hero-section {
+    background: linear-gradient(135deg, #8B4513 0%, #A0522D 50%, #CD853F 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="paw" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="2" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23paw)"/></svg>');
+    opacity: 0.3;
+}
+
+.hero-section .container {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-section h1 {
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-section p {
+    color: rgba(255,255,255,0.9);
+    font-size: 1.2rem;
+}
+
+.hero-image img {
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: 4px solid rgba(255,255,255,0.2);
+}
+
+/* Tarjetas de características */
+.feature-card {
+    background: linear-gradient(145deg, #ffffff 0%, #F5F5DC 100%);
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(139, 69, 19, 0.1);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(139, 69, 19, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.feature-card:hover::before {
+    left: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(139, 69, 19, 0.2);
+    border-color: var(--primary-pet);
+}
+
+.feature-card i {
+    background: linear-gradient(45deg, var(--primary-pet), var(--secondary-pet));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Botones personalizados */
+.btn-producto {
+    background: linear-gradient(45deg, var(--primary-pet), var(--secondary-pet));
+    border: none;
+    transition: all 0.3s ease;
+    border-radius: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+    color: white;
+}
+
+.btn-producto:hover {
+    background: linear-gradient(45deg, var(--secondary-pet), var(--accent-pet));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 69, 19, 0.4);
+    color: white;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, var(--primary-pet), var(--secondary-pet));
+    border: none;
+    border-radius: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, var(--secondary-pet), var(--accent-pet));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 69, 19, 0.4);
+    color: white;
+}
+
+/* Navbar personalizado */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    background: linear-gradient(45deg, var(--primary-pet), var(--secondary-pet));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+    color: var(--primary-pet);
+    transform: translateY(-1px);
+}
+
+.navbar-dark .navbar-nav .nav-link.active {
+    color: var(--primary-pet);
+    font-weight: 600;
+}
+
+.navbar-dark .navbar-nav .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(45deg, var(--primary-pet), var(--secondary-pet));
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.navbar-dark .navbar-nav .nav-link:hover::after,
+.navbar-dark .navbar-nav .nav-link.active::after {
+    width: 100%;
+}
+
+/* Sección de productos */
+#lista-productos {
+    position: relative;
+}
+
+#lista-productos::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(45deg, var(--primary-pet), var(--secondary-pet));
+    border-radius: 2px;
+}
+
+/* Footer mejorado - información siempre visible */
+footer .text-muted {
+    color: #cbd5e1 !important;
+    transition: color 0.3s ease;
+}
+
+footer .text-muted:hover {
+    color: #ffffff !important;
+}
+
+/* Información de contacto siempre visible */
+.contact-info {
+    opacity: 1 !important;
+    transition: opacity 0.3s ease;
+}
+
+.contact-info:hover {
+    opacity: 1 !important;
+}
+
+/* Estilos para el panel de administración */
+.sidebar {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #F5F5DC 0%, #F0E68C 100%);
+    border-right: 2px solid var(--primary-pet);
+}
+
+.sidebar .nav-link {
+    color: var(--dark-pet);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    margin: 2px 0;
+}
+
+.sidebar .nav-link:hover {
+    background-color: var(--accent-pet);
+    color: white;
+    transform: translateX(5px);
+}
+
+.sidebar .nav-link.active {
+    background-color: var(--primary-pet);
+    color: white;
+}
+
+.logo-container {
+    padding: 1rem;
+    border-bottom: 2px solid var(--primary-pet);
+    margin-bottom: 1rem;
+}
+
+.logo-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+/* Logo en navbar */
+.navbar-brand .logo-img {
+    width: 35px;
+    height: 35px;
+    margin-right: 8px;
+}
+
+/* Logo en footer */
+footer .logo-img {
+    width: 30px;
+    height: 30px;
+    margin-right: 8px;
+}
+
+/* Logo CSS */
+.logo-container {
+    display: inline-block;
+    width: 35px;
+    height: 35px;
+    position: relative;
+}
+
+.logo-circle {
+    width: 35px;
+    height: 35px;
+    background: #8B4513;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.logo-square {
+    width: 20px;
+    height: 20px;
+    background: #CD853F;
+    border-radius: 3px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.logo-dot {
+    width: 4px;
+    height: 4px;
+    background: #2F1B14;
+    border-radius: 50%;
+}
+
+footer .logo-container {
+    width: 30px;
+    height: 30px;
+}
+
+footer .logo-circle {
+    width: 30px;
+    height: 30px;
+}
+
+footer .logo-square {
+    width: 16px;
+    height: 16px;
+}
+
+footer .logo-dot {
+    width: 3px;
+    height: 3px;
+}
+
+/* Estilos mejorados para tablas de admin */
+.table-hover tbody tr:hover {
+    background-color: rgba(139, 69, 19, 0.05) !important;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.table-dark {
+    background-color: #2F1B14 !important;
+    color: #fff !important;
+}
+
+.table-dark th {
+    background-color: #2F1B14 !important;
+    color: #fff !important;
+    font-weight: 600;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.table th {
+    background-color: var(--soft-pet);
+    color: var(--dark-pet);
+    font-weight: 600;
+    border-bottom: 2px solid var(--primary-pet);
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Badges de estado */
+.badge.bg-success {
+    background-color: var(--success-color) !important;
+}
+
+.badge.bg-warning {
+    background-color: var(--warning-color) !important;
+}
+
+.badge.bg-danger {
+    background-color: var(--danger-color) !important;
+}
+
+.badge.bg-info {
+    background-color: var(--info-color) !important;
+}
+
+/* Botones del panel de administración */
+.btn-primary {
+    background-color: var(--primary-pet);
+    border-color: var(--primary-pet);
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-pet);
+    border-color: var(--secondary-pet);
+}
+
+.btn-outline-primary {
+    color: var(--primary-pet);
+    border-color: var(--primary-pet);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-pet);
+    border-color: var(--primary-pet);
+}
+
+.btn-outline-danger {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+.btn-outline-danger:hover {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+/* Colores de precios y elementos específicos */
+.card-title {
+    color: var(--primary-pet) !important;
+    font-weight: 600;
+}
+
+.card-text {
+    color: #2F1B14 !important;
+}
+
+.price {
+    color: var(--primary-pet) !important;
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.badge {
+    font-weight: 500;
+}
+
+.badge.bg-primary {
+    background-color: var(--primary-pet) !important;
+}
+
+.badge.bg-secondary {
+    background-color: var(--secondary-pet) !important;
+}
+
+/* Iconos de características */
+.feature-icon {
+    background: linear-gradient(45deg, var(--primary-pet), var(--secondary-pet)) !important;
+    color: white !important;
+}
+
+/* Enlaces */
+a {
+    color: var(--primary-pet);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--secondary-pet);
+}
+
+/* Formularios mejorados */
+.form-control, .form-select {
+    border: 0 !important;
+    box-shadow: 0 0 0 0.1rem rgba(139, 69, 19, 0.1) !important;
+    padding: 0.75rem !important;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border: 0 !important;
+    box-shadow: 0 0 0 0.2rem rgba(139, 69, 19, 0.25) !important;
+}
+
+textarea.form-control {
+    padding: 0.75rem !important;
+    resize: vertical;
+}
+
+.form-label {
+    color: var(--dark-pet);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* Override Bootstrap colors to use Panchi Store palette */
+.bg-primary {
+    background-color: var(--primary-pet) !important;
+}
+
+.text-primary {
+    color: var(--primary-pet) !important;
+}
+
+.btn-primary {
+    background-color: var(--primary-pet) !important;
+    border-color: var(--primary-pet) !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-pet) !important;
+    border-color: var(--secondary-pet) !important;
+}
+
+.btn-outline-primary {
+    color: var(--primary-pet) !important;
+    border-color: var(--primary-pet) !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-pet) !important;
+    border-color: var(--primary-pet) !important;
+    color: white !important;
+}
+
+/* Card headers */
+.card-header {
+    background-color: var(--primary-pet) !important;
+    color: white !important;
+}
+
+/* Form controls focus */
+.form-control:focus {
+    border-color: var(--primary-pet) !important;
+    box-shadow: 0 0 0 0.2rem rgba(139, 69, 19, 0.25) !important;
+}
+
+/* Alert colors */
+.alert-success {
+    background-color: #d4edda !important;
+    border-color: #c3e6cb !important;
+    color: #155724 !important;
+}
+
+.alert-danger {
+    background-color: #f8d7da !important;
+    border-color: #f5c6cb !important;
+    color: #721c24 !important;
+}
+
+.alert-info {
+    background-color: #d1ecf1 !important;
+    border-color: #bee5eb !important;
+    color: #0c5460 !important;
+}
+
+/* Modal headers */
+.modal-header {
+    background-color: var(--primary-pet) !important;
+    color: white !important;
+}
+
+/* Navbar brand */
+.navbar-brand {
+    color: white !important;
+}
+
+/* Logo de marca: tamaño y alineación */
+.brand-logo {
+    width: 36px;
+    height: 36px;
+    display: inline-block;
+}
+
+/* Links in footer */
+footer a {
+    color: #cbd5e1 !important;
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: var(--primary-pet) !important;
+}
+
+/* Ajustes responsive */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-section .lead {
+        font-size: 1.1rem;
+    }
+    
+    .card-img-top {
+        height: 180px;
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+    
+    h2 {
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .hero-section {
+        text-align: center;
+    }
+    
+    .hero-image {
+        margin-top: 2rem;
+    }
+}
